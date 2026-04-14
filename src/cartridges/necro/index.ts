@@ -1,11 +1,11 @@
-import { DefaultConsoleActons, ICartridge } from "../../core/shims/textadventurejs.shim";
+import { DefaultConsoleActons } from "../../core/shims/textadventurejs.shim";
 import { CartridgeBuilder } from "../../builders/cartridge.builder";
 import fs from 'fs';
 import path from 'path';
 
-const introText = fs.readFileSync(path.join(__dirname, 'introtext.txt'), 'utf8').toString();
+const introText = fs.readFileSync(path.resolve(__dirname, 'introtext.txt'), 'utf8');
 
-export = (cartridgeBuilder: CartridgeBuilder) => {
+export default (cartridgeBuilder: CartridgeBuilder) => {
 
     cartridgeBuilder
     .introText(introText)

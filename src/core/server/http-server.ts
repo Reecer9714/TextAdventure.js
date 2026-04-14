@@ -2,7 +2,9 @@ import express, { Handler } from 'express';
 import { Express } from 'express';
 
 import bodyParser from 'body-parser';
-import session from 'express-session';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import createConsole from '../console/console';
 
 import { ICartridge } from '../shims/textadventurejs.shim';
@@ -33,6 +35,20 @@ export class ConsoleHttpServer {
 
     this._app = express();
 
+    // Security middleware
+    this._app.use(helmet());
+    this._app.use(cors());
+
+    // Rate limiting
+    this._app.use(
+      rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        max: 100, // Limit each IP to 100 requests per windowMs
+        message: 'Too many requests from this IP, please try again later.',
+      })
+    );
+
+    // Body parsing
     this._app.use(bodyParser.json());
     this._app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -41,8 +57,6 @@ export class ConsoleHttpServer {
         this._app.use(toUse);
       });
     }
-
-    this._app.use(session({secret: '1234567890QWERTY', resave: false, saveUninitialized: true}));
 
     const con = createConsole(this._cartridge, {
       onDebugLog: (message: string) => {

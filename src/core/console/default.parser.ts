@@ -3,22 +3,22 @@ import { IParser } from './parser';
 
 export class DefaultParser implements IParser {
 
-	parse(string: string) {
+	parse(string: string): ICommand {
 
-		var skipWords = ['','a','an','at','in','on','the','to'];
-		var subjectEndWords = ['on','with','and'];
+		const skipWords = ['','a','an','at','in','on','the','to'];
+		const subjectEndWords = ['on','with','and'];
 
 		// === Prep Input for Processing ===
-		var components = string.toLowerCase().split(' ');
+		const components = string.toLowerCase().split(' ');
 
 		// === Create Necessary Variables ===
-		var command: ICommand = {
+		const command: ICommand = {
 			action: '',
 			subject: ''
 		};
 
-		var subjectStartIndex;
-		var objectStartIndex;
+		let subjectStartIndex: number | undefined;
+		let objectStartIndex: number | undefined;
 
 		// === Determine Action ===
 		command.action =  components[0];
