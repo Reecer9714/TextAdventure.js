@@ -399,23 +399,42 @@ text-adventure/
      - Created .prettierrc
 ```
 
-### Phase 2: Build & Tooling
+### Phase 2: Build & Tooling ✅ COMPLETED
 
-```[ ] Add Vite/esbuild
-[ ] Add HMR for hot reloading
+**Status:** Complete (2026-04-14)
+**Summary:** See [PHASE_2_SUMMARY.md](./PHASE_2_SUMMARY.md)
+
+```diff
+[✓] Add Vite/esbuild
+     - Installed Vite 6.x
+     - Created vite.config.ts
+     - Configured ES modules
+     - Set up Rollup output
+
+[✓] Add HMR for hot reloading
+     - Vite dev server with HMR
+     - Fast rebuilds during development
+     - Live reloading on file changes
+
+[✓] Add pre-commit hooks
+     - Installed Husky + lint-staged
+     - Configured .lintstagedrc.js
+     - Auto-lint and format on commit
+
+[✓] Add CI/CD pipeline (GitHub Actions)
+     - Created .github/workflows/ci.yml
+     - Matrix builds (Node 18, 20, 22)
+     - Automated testing on push/PR
+     - Security audit job
+     - Build verification
+     - Artifact upload
+```
+
+### Phase 2.5: Cleanup
+
+```
 [ ] Fix ESLint errors
 [ ] Format code with Prettier
-[ ] Add pre-commit hooks
-[ ] Add CI/CD pipeline (GitHub Actions)
-```
-
-### Phase 2: Build & Tooling
-
-```
-[ ] Add Vite/esbuild
-[ ] Add HMR for hot reloading
-[ ] Add pre-commit hooks
-[ ] Add CI/CD pipeline (GitHub Actions)
 ```
 
 ### Phase 3: Frontend (Pending Phase 2 completion)

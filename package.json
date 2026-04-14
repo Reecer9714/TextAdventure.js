@@ -16,11 +16,11 @@
   "types": "dist/web/server.d.ts",
   "scripts": {
     "clean": "shx rm -rf dist",
-    "build": "npm run clean && tsc && npm run copy",
+    "build": "vite build",
     "copy": "npm run copy:web && npm run copy:cartridges",
     "copy:cartridges": "shx cp -r src/cartridges/** dist/cartridges",
     "copy:web": "shx cp -r src/web/static/** dist/web/static",
-    "dev": "tsc --watch",
+    "dev": "vite dev",
     "start": "node dist/web/server.js",
     "start:web": "node dist/web/server.js",
     "start:cli": "node dist/cli/server.js",
@@ -31,7 +31,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:watch": "vitest watch",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "preview": "vite preview",
+    "prepare": "husky install",
+    "prepare": "husky"
   },
   "files": [
     "dist",
@@ -63,13 +66,17 @@
     "@types/node": "^22.10.5",
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^8.19.1",
-    "eslint-config-prettier": "^10.0.1",
     "@typescript-eslint/parser": "^8.19.1",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
     "eslint": "^9.17.0",
+    "eslint-config-prettier": "^10.0.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.4.2",
     "shx": "^0.3.4",
     "supertest": "^7.0.0",
     "typescript": "^5.4.2",
+    "vite": "^8.0.8",
     "vitest": "^4.1.4"
   }
 }
