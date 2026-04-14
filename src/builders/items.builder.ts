@@ -1,10 +1,10 @@
-import { IItemCollection, IItem, IInteractable } from '../core/shims/textadventurejs.shim';
+import { IItemCollection, IItem, IInteractable } from '../core/types/textadventurejs.shim';
 import { GameContext } from './game.context';
 
 export class ItemsBuilder {
   private _gameContext: GameContext;
   private _itemBuilders: { [itemName: string]: ItemBuilder } = {};
-  private _savedItems: IItemCollection;
+  private _savedItems?: IItemCollection;
 
   constructor(gameContext: GameContext, savedItems?: IItemCollection) {
     this._gameContext = gameContext;
@@ -20,7 +20,7 @@ export class ItemsBuilder {
 
   public build(): IItemCollection {
     const itemBuilders = this._savedItems
-      ? this.createItemBuildersFromSavedItems()
+      ? this.createItemBuildersFromSavedItems(this._savedItems)
       : this._itemBuilders;
     const items: IItemCollection = {};
 
@@ -31,11 +31,13 @@ export class ItemsBuilder {
     return items;
   }
 
-  private createItemBuildersFromSavedItems(): { [itemName: string]: ItemBuilder } {
+  private createItemBuildersFromSavedItems(collection: IItemCollection): {
+    [itemName: string]: ItemBuilder;
+  } {
     const itemBuilders: { [itemName: string]: ItemBuilder } = {};
 
-    Object.keys(this._savedItems).forEach(itemName => {
-      itemBuilders[itemName] = new ItemBuilder(this._gameContext, this._savedItems[itemName]);
+    Object.keys(collection).forEach(itemName => {
+      itemBuilders[itemName] = new ItemBuilder(this._gameContext, collection[itemName]);
     });
 
     return itemBuilders;
@@ -55,7 +57,7 @@ export class ItemBuilder {
   private _description: string;
   private _hidden: boolean;
 
-  private _savedItem: IItem;
+  private _savedItem?: IItem;
 
   constructor(gameContext: GameContext, savedItem?: IItem) {
     this._gameContext = gameContext;
@@ -122,12 +124,6 @@ export class ItemBuilder {
       }
     };
 
-    const onUse = (object: string) => {
-      if (typeof this._onUse === 'function') {
-        return this._onUse(this._gameContext, object);
-      }
-    };
-
     return {
       description: this._savedItem ? this._savedItem.description : this._description,
       displayName: this._savedItem ? this._savedItem.displayName : this._displayName,
@@ -135,7 +131,10 @@ export class ItemBuilder {
       quantity: this._savedItem ? this._savedItem.quantity : this._quantity,
       interactions: interactions,
       onTaken: onTaken,
-      use: onUse,
+      use:
+        typeof this._onUse === 'function'
+          ? object => this._onUse(this._gameContext, object)
+          : undefined,
     };
   }
 }

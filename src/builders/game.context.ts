@@ -1,8 +1,8 @@
 import { CartridgeBuilder } from './cartridge.builder';
-import { LocationBuilder } from './location.builder';
+
 import { ExitBuilder } from './exits.builder';
 import { InteractableBuilder } from './interactables.builder';
-import { ILocation } from '../core/shims/textadventurejs.shim';
+import { ILocation } from '../core/types/textadventurejs.shim';
 import { ItemBuilder } from './items.builder';
 
 export class GameContext {
@@ -16,7 +16,7 @@ export class GameContext {
     return this._gameBuilder.game.gameData.player.properties[property];
   }
 
-  public setPlayerProperty(property: string, value: any): void {
+  public setPlayerProperty(property: string, value: unknown): void {
     this._gameBuilder.game.gameData.player.properties[property] = value;
   }
 
@@ -29,7 +29,7 @@ export class GameContext {
 
     const location = this.getLocation(locationName);
 
-    location.exits = location.exits || {};
+    location.exits ??= {};
 
     exitConfigurator(exitBuilder);
 
@@ -45,7 +45,7 @@ export class GameContext {
 
     const location = this.getLocation(locationName);
 
-    location.interactables = location.interactables || {};
+    location.interactables ??= {};
 
     interactableConfigurator(interactableBuilder);
 
@@ -61,7 +61,7 @@ export class GameContext {
 
     const location = this.getLocation(locationName);
 
-    location.items = location.items || {};
+    location.items ??= {};
 
     itemConfigurator(itemBuilder);
 

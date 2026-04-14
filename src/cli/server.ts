@@ -1,5 +1,5 @@
-const io = require('console-read-write');
-const chalk = require('chalk');
+import * as io from 'console-read-write';
+import * as chalk from 'chalk';
 
 import createConsole, { IConsoleInputResponse } from '../core/console/console';
 

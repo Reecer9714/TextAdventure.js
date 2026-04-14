@@ -1,4 +1,4 @@
-import { ILocation, ICommand } from '../core/shims/textadventurejs.shim';
+import { ILocation, ICommand } from '../core/types/textadventurejs.shim';
 import { InteractablesBuilder } from './interactables.builder';
 import { ItemsBuilder } from './items.builder';
 import { ExitsBuilder } from './exits.builder';
@@ -18,7 +18,7 @@ export class LocationBuilder {
 
   private _gameContext: GameContext;
 
-  private _savedLocation: ILocation;
+  private _savedLocation?: ILocation;
 
   constructor(gameContext: GameContext, savedLocation?: ILocation) {
     this._gameContext = gameContext;

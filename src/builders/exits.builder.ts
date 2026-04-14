@@ -1,4 +1,4 @@
-import { IExitCollection, IExit } from '../core/shims/textadventurejs.shim';
+import { IExitCollection, IExit } from '../core/types/textadventurejs.shim';
 import { GameContext } from './game.context';
 
 export class ExitsBuilder {

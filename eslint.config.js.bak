@@ -9,7 +9,7 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: './tsconfig.json',
+        project: ['./tsconfig.json', './tsconfig.config.json'],
         tsConfigRootDir: import.meta.dirname,
       },
       ecmaVersion: 2022,
@@ -30,11 +30,12 @@ export default [
       '@typescript-eslint/await-thenable': 'error',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       eqeqeq: ['error', 'always'],
+      'no-unused-vars': 'off', // Disable base ESLint rule, use TS version instead
     },
   },
   {
-    files: ['**/*.ts'],
-    ignores: ['dist/', 'node_modules/', '*.js'],
+    files: ['src/**/*.ts'],
+    ignores: ['dist/', 'node_modules/', '*.js', 'eslint.config.js', 'vite.config.ts', 'vitest.config.js'],
   },
   prettier,
 ];

@@ -1,4 +1,4 @@
-import { ICartridge } from '../shims/textadventurejs.shim';
+import { ICartridge } from '../types/textadventurejs.shim.js';
 
 export interface ICartridgeRepository {
   saveCartridgeAsync(cartridge: ICartridge): Promise<void>;

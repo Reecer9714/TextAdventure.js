@@ -1,4 +1,4 @@
-import { IPlayer, IMap } from '../core/shims/textadventurejs.shim';
+import { IPlayer, IMap } from '../core/types/textadventurejs.shim';
 import { GameContext } from './game.context';
 import { ItemsBuilder } from './items.builder';
 

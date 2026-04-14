@@ -1,5 +1,5 @@
 import { ICartridgeRepository } from './cartridge.repository';
-import { ICartridge } from '../shims/textadventurejs.shim';
+import { ICartridge } from '../types/textadventurejs.shim.js';
 import fs from 'fs';
 import { promisify } from 'util';
 
@@ -48,7 +48,7 @@ export class FileSystemCartridgeRepository implements ICartridgeRepository {
   }
 
   private async saveFileExistsAsync(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<boolean>((resolve, _reject) => {
       fs.access(this._saveFilePath, fs.constants.F_OK, err => {
         if (err) {
           resolve(false);

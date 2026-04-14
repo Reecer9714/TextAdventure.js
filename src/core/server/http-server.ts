@@ -7,7 +7,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import createConsole from '../console/console';
 
-import { ICartridge } from '../shims/textadventurejs.shim';
+import { ICartridge } from '../types/textadventurejs.shim.js';
 
 export interface IServerOptions {
   ipAddress?: string;
@@ -17,7 +17,7 @@ export interface IServerOptions {
 
 export class ConsoleHttpServer {
   private _options: IServerOptions = {};
-  private _middleware?: Handler[];
+  private _middleware: Handler[];
   private _app: Express;
   private _cartridge: ICartridge;
 

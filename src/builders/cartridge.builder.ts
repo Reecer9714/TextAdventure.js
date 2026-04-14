@@ -1,5 +1,5 @@
 import { MapBuilder } from './map.builder';
-import { ICartridge } from '../core/shims/textadventurejs.shim';
+import { ICartridge } from '../core/types/textadventurejs.shim';
 import { GameContext } from './game.context';
 import { PlayerBuilder } from './player.builder';
 

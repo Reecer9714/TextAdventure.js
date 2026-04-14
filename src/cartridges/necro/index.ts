@@ -1,4 +1,4 @@
-import { DefaultConsoleActons } from '../../core/shims/textadventurejs.shim';
+import { DefaultConsoleActons } from '../../core/types/textadventurejs.shim';
 import { CartridgeBuilder } from '../../builders/cartridge.builder';
 import fs from 'fs';
 import path from 'path';
@@ -19,7 +19,7 @@ export default (cartridgeBuilder: CartridgeBuilder) => {
               .on(DefaultConsoleActons.look, () => {
                 return 'the door leads outside.';
               })
-              .on('open', context => {
+              .on('open', (context) => {
                 if (context.getPlayerProperty('isVillageSchoolDoorOpened')) {
                   context.spawnExitInLocation('Village.School', 'outside', exit => {
                     exit.displayName('Outside').destination('Village.Square');
@@ -35,10 +35,10 @@ export default (cartridgeBuilder: CartridgeBuilder) => {
               return 'The window is baricaded.';
             });
 
-            interactables.add('cabinet').on(DefaultConsoleActons.look, context => {
+            interactables.add('cabinet').on(DefaultConsoleActons.look, (context) => {
               context.spawnInteractableInLocation('Village.School', 'drawer', interactable => {
-                interactable.on('open', context => {
-                  context.spawnItemInLocation('Village.School', 'key', item => {
+                interactable.on('open', (context) => {
+                  context.spawnItemInLocation('Village.School', 'key', (item) => {
                     item.onUse((context, object) => {
                       if (object === 'door') {
                         context.setPlayerProperty('isVillageSchoolDoorOpened', true);
@@ -56,7 +56,7 @@ export default (cartridgeBuilder: CartridgeBuilder) => {
               return 'An old cabinet with a single drawer.';
             });
           })
-          .configureItems(items => {
+          .configureItems((_items: unknown) => {
             /*
                     items.add('dildo')
                         .displayName('dildo')
@@ -69,7 +69,7 @@ export default (cartridgeBuilder: CartridgeBuilder) => {
                         });
                     */
           })
-          .configureExits(exits => {});
+          .configureExits((_exits: unknown) => {});
       });
 
       map.configureLocation('Village.Square', location => {

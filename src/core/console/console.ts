@@ -9,7 +9,9 @@ import {
   ICommand,
   DefaultConsoleActons,
   IItem,
-} from '../shims/textadventurejs.shim';
+  IExitCollection,
+  IItemCollection,
+} from '../types/textadventurejs.shim.js';
 
 export interface IConsoleOptions {
   onDebugLog?: (message: string) => void;
@@ -27,11 +29,11 @@ export interface IConsoleInputResponse {
 
 export default function createConsole(
   cartridge: ICartridge,
-  options?: IConsoleOptions,
-  parser?: IParser
+  consoleOptions?: IConsoleOptions,
+  consoleParser?: IParser
 ): IConsole {
-  parser = parser || new DefaultParser();
-  options = options || {};
+  const parser = consoleParser ?? new DefaultParser();
+  const options = consoleOptions ?? {};
 
   function getIntroText(): string {
     return cartridge.gameData.introText;
@@ -130,22 +132,20 @@ export default function createConsole(
       const currentLocation = getCurrentLocation(game);
       const exits = currentLocation.exits;
 
-      let playerDestination = null;
+      let playerDestination: string | null = null;
 
       if (!exits) {
         return { message: "You can't go anywhere from this location.", success: false };
       }
 
-      const matchingExitName = Object.keys(exits).find(
-        exitName =>
+      const matchingExit = Object.entries(exits).find(
+        ([exitName, exit]) =>
           exits[exitName].displayName &&
           exits[exitName].displayName.toLowerCase() === command.subject.toLowerCase()
       );
 
-      const matchingExit = exits[matchingExitName];
-
       if (matchingExit) {
-        playerDestination = matchingExit.destination;
+        playerDestination = matchingExit[1].destination;
       }
 
       if (playerDestination === null) {
@@ -165,7 +165,7 @@ export default function createConsole(
       }
 
       if (typeof destinationLocation.setup === 'function') {
-        game.map[playerDestination].setup();
+        destinationLocation.setup();
       }
 
       game.player.currentLocation = playerDestination;
@@ -215,7 +215,7 @@ export default function createConsole(
         };
       }
 
-      var interactionMessage = undefined;
+      let interactionMessage: string | undefined = undefined;
 
       if (
         canInteractWithSubjectInCurrentLocation(game, DefaultConsoleActons.look, command.subject)
@@ -280,7 +280,7 @@ export default function createConsole(
         const item = getItem(game.player.inventory, command.subject);
 
         if (typeof item.use === 'function') {
-          return { message: item.use(command.object), success: true };
+          return { message: item.use(command.object ?? command.subject), success: true };
         } else {
           return { message: `Can't use '${command.subject}'`, success: false };
         }
@@ -293,22 +293,21 @@ export default function createConsole(
   // ----------------------------\
   // === Helper Functions ===============================================================================================
   // ----------------------------/
-  function checkForGameEnd(game: any, returnString: any) {
-    if (game.gameOver) {
-      returnString = returnString + '\n' + game.outroText;
-      actions.die(game, { action: 'die' });
+  function checkForGameEnd(game: unknown, returnString: string): string {
+    if ((game as Record<string, unknown>).gameOver) {
+      return returnString + '\n' + (game as Record<string, unknown>).outroText;
     }
     return returnString;
   }
 
-  function clone(obj: any) {
-    if (obj == null || typeof obj != 'object') {
+  function clone(obj: unknown): unknown {
+    if (obj === null || typeof obj !== 'object') {
       return obj;
     }
-    var temp = obj.constructor();
-    for (var key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        temp[key] = clone(obj[key]);
+    const temp = obj.constructor();
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        (temp as Record<string, unknown>)[key] = clone(obj[key]);
       }
     }
     return temp;
@@ -324,38 +323,39 @@ export default function createConsole(
     }
   }
 
-  function exitsToString(exitsObject: any) {
-    var numOfExits = Object.keys(exitsObject).length;
+  function exitsToString(exitsObject: IExitCollection): string {
+    const numOfExits = Object.keys(exitsObject).length;
     if (numOfExits === 0) {
       return '';
     }
-    var visibleExits = [];
-    for (var exit in exitsObject) {
-      var exitObject = exitsObject[exit];
+    const visibleExits: string[] = [];
+    for (const exit in exitsObject) {
+      const exitObject = exitsObject[exit];
       if (!exitObject.hidden) {
-        visibleExits.push(exitObject.displayName);
+        visibleExits.push(exitObject.displayName as string);
       }
     }
+    let exitReturnString: string;
     switch (visibleExits.length) {
       case 0:
         return '';
       case 1:
-        var returnString = ' Exit is ';
+        exitReturnString = ' Exit is ';
         break;
       default:
-        var returnString = ' Exits are ';
+        exitReturnString = ' Exits are ';
     }
-    for (var i = 0; i < visibleExits.length; ++i) {
-      returnString = returnString.concat(visibleExits[i]);
+    for (let i = 0; i < visibleExits.length; ++i) {
+      exitReturnString = exitReturnString.concat(visibleExits[i]);
       if (i === visibleExits.length - 2) {
-        returnString = returnString.concat(' and ');
+        exitReturnString = exitReturnString.concat(' and ');
       } else if (i === visibleExits.length - 1) {
-        returnString = returnString.concat('.');
+        exitReturnString = exitReturnString.concat('.');
       } else {
-        returnString = returnString.concat(', ');
+        exitReturnString = exitReturnString.concat(', ');
       }
     }
-    return returnString;
+    return exitReturnString;
   }
 
   function getCurrentLocation(gameData: IGameData): ILocation {
@@ -398,14 +398,14 @@ export default function createConsole(
     }
   }
 
-  function itemsToString(itemsObject: any) {
-    var numOfItems = Object.keys(itemsObject).length;
+  function itemsToString(itemsObject: IItemCollection): string {
+    const numOfItems = Object.keys(itemsObject).length;
     if (numOfItems === 0) {
       return '';
     }
-    var visibleItems = [];
-    for (var item in itemsObject) {
-      var itemObject = itemsObject[item];
+    const visibleItems: Array<{ name: string; quantity: number }> = [];
+    for (const item in itemsObject) {
+      const itemObject = itemsObject[item];
       if (!itemObject.hidden) {
         visibleItems.push({ name: itemObject.displayName, quantity: itemObject.quantity });
       }
@@ -413,34 +413,35 @@ export default function createConsole(
     if (visibleItems.length === 0) {
       return '';
     }
+    let itemsReturnString: string;
     if (visibleItems[0].quantity === 1) {
-      var returnString = ' There is ';
+      itemsReturnString = ' There is ';
     } else {
-      var returnString = ' There are ';
+      itemsReturnString = ' There are ';
     }
-    for (var i = 0; i < visibleItems.length; ++i) {
+    for (let i = 0; i < visibleItems.length; ++i) {
       if (visibleItems[i].quantity > 1) {
-        returnString = returnString.concat(
+        itemsReturnString = itemsReturnString.concat(
           visibleItems[i].quantity + ' ' + visibleItems[i].name + 's'
         );
       } else {
-        returnString = returnString.concat('a ' + visibleItems[i].name);
+        itemsReturnString = itemsReturnString.concat('a ' + visibleItems[i].name);
       }
       if (i === visibleItems.length - 2) {
-        returnString = returnString.concat(' and ');
+        itemsReturnString = itemsReturnString.concat(' and ');
       } else if (i === visibleItems.length - 1) {
-        returnString = returnString.concat(' here.');
+        itemsReturnString = itemsReturnString.concat(' here.');
       } else {
-        returnString = returnString.concat(', ');
+        itemsReturnString = itemsReturnString.concat(', ');
       }
     }
-    return returnString;
+    return itemsReturnString;
   }
 
-  function interactWithSubjectInCurrentLocation(game: any, interaction: any, subject: any) {
+  function interactWithSubjectInCurrentLocation(game: IGameData, interaction: string, subject: string) {
     var currentLocation = getCurrentLocation(game);
     var itemsForCurrentLocation = currentLocation.items;
-    var interactablesForCurrentLocation = currentLocation.interactables;
+    var interactablesForCurrentLocation = currentLocation.interactables ?? [];
 
     var subjectIsItem = !!itemsForCurrentLocation[subject];
     var subjectIsInteractable = !!interactablesForCurrentLocation[subject];
@@ -473,7 +474,7 @@ export default function createConsole(
       );
     }
 
-    return;
+    return "";
   }
 
   function isItemInPlayerInventory(gameData: IGameData, itemName: any): boolean {
@@ -537,23 +538,23 @@ export default function createConsole(
     return !!(interactable && interactable[actionName]);
   }
 
-  function moveItem(itemName: any, startLocation: any, endLocation: any) {
-    var itemName = getItemName(startLocation, itemName);
-    var itemAtOrigin = getItem(startLocation, itemName);
+  function moveItem(itemName: string, startLocation: IItemCollection, endLocation: IItemCollection) {
+    const itemNameToMove = getItemName(startLocation, itemName);
+    const itemAtOrigin = getItem(startLocation, itemName);
     if (itemAtOrigin === undefined) {
       throw 'itemDoesNotExist';
     }
-    var itemAtDestination = getItem(endLocation, itemName);
+    const itemAtDestination = getItem(endLocation, itemName);
     if (itemAtDestination === undefined) {
-      endLocation[itemName] = clone(itemAtOrigin);
-      endLocation[itemName].quantity = 1;
+      (endLocation)[itemNameToMove] = clone(itemAtOrigin) as IItem;
+      (endLocation)[itemNameToMove].quantity = 1;
     } else {
-      ++endLocation[itemName].quantity;
+      (endLocation)[itemNameToMove].quantity++;
     }
-    if (itemAtOrigin.hasOwnProperty('quantity')) {
-      --itemAtOrigin.quantity;
-      if (itemAtOrigin.quantity === 0) {
-        delete startLocation[itemName];
+    if (Object.prototype.hasOwnProperty.call(itemAtOrigin, 'quantity')) {
+      (itemAtOrigin as { quantity: number }).quantity--;
+      if ((itemAtOrigin as { quantity: number }).quantity === 0) {
+        delete startLocation[itemNameToMove];
       }
     }
   }

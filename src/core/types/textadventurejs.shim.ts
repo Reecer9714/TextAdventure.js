@@ -28,7 +28,7 @@ export interface ILocation {
   firstVisit: boolean;
   description: string;
   displayName?: string;
-  items?: IItemCollection;
+  items: IItemCollection;
   interactables?: IInteractableCollction;
   exits?: IExitCollection;
 
@@ -64,6 +64,7 @@ export interface IInteractable {
 export interface IExit {
   displayName: string;
   destination: string;
+  hidden?: boolean;
 }
 
 export interface IGameActions {

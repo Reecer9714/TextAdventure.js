@@ -1,4 +1,4 @@
-import { ICommand } from '../shims/textadventurejs.shim';
+import { ICommand } from '../types/textadventurejs.shim.js';
 
 export interface IParser {
   parse(string: string): ICommand;

@@ -1,13 +1,13 @@
-import { DefaultConsoleActons } from '../core/shims/textadventurejs.shim';
+import { DefaultConsoleActons } from '../core/types/textadventurejs.shim';
 
-const game: any = {};
+const game: Record<string, unknown> = {};
 
 // mockup of the future cartridge definition system
-game.createLocation('Village.School', (location: any) => {
+game.createLocation('Village.School', (_location: unknown) => {
   location
     .description('asdsa')
     .displayName('sdasd')
-    .interactables((interactables: any) => {
+    .interactables((_interactables: unknown) => {
       interactables
         .add('door')
         .interact(DefaultConsoleActons.look, () => {
@@ -39,6 +39,6 @@ game.createLocation('Village.School', (location: any) => {
         return "it's a cabinet";
       });
     })
-    .items((items: any) => {})
-    .exits((exits: any) => {});
+    .items((_items: unknown) => {})
+    .exits((_exits: unknown) => {});
 });

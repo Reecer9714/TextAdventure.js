@@ -1,11 +1,14 @@
-$(function () {
-  // ===== Onload Functions ===========================================================
+// ===== Onload Functions ===========================================================
+var inputBuffer: string[] = [];
+var inputBufferIndex = 0;
+
+function initializeTerminal(): void {
   displayResize();
   messageServer('get games');
 
   // ===== Event Handlers =============================================================
   // ----- Input Submit ---------------------------------------------------------------
-  $('#console').submit(function (event: any) {
+  $('#console').submit(function (event) {
     event.preventDefault();
     var inputString = '' + $('#input').val();
     inputString = inputString.trim();
@@ -20,9 +23,7 @@ $(function () {
     inputBufferIndex = inputBuffer.length;
   });
   // ----- Input Buffer ---------------------------------------------------------------
-  var inputBuffer: any[] = [];
-  var inputBufferIndex = 0;
-  $(document).keydown(function (event) {
+  $(document).trigger("keydown", function (event: KeyboardEvent) {
     switch (event.which) {
       case 38: // up
         if (inputBufferIndex > 0) {
@@ -45,25 +46,28 @@ $(function () {
   $(window).resize(function () {
     displayResize();
   });
-});
+}
+
+initializeTerminal();
 
 // ===== Functions ======================================================================
 // ----- Send Message to Server ---------------------------------------------------------
-function messageServer(message: any) {
-  $.post(window.location.href + 'console', { input: message }, function (data) {
+function messageServer(message: string) {
+  $.post(window.location.href + 'console', { input: message }, (data: any) => {
     toScreen(data.response, 'console');
   }).fail(function () {
     toScreen('Unable to reach server.', 'terminal');
   });
 }
 // ----- Insure Terminal Appearance -----------------------------------------------------
-function displayResize() {
+function displayResize(): void {
   $('#display').height($(window).height() - 30);
   $('#display').scrollTop($('#display')[0].scrollHeight);
 }
 // ----- Write to Screen ----------------------------------------------------------------
-function toScreen(message: any, actor: any) {
-  if (actor == 'user') {
+// ----- Write to Screen ----------------------------------------------------------------
+function toScreen(message: string, actor: string): void {
+  if (actor === 'user') {
     message = '> ' + message;
   }
   var displayString = $('#display').val() + message + '\n';

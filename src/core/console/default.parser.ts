@@ -1,4 +1,4 @@
-import { ICommand } from '../shims/textadventurejs.shim';
+import { ICommand } from '../types/textadventurejs.shim.js';
 import { IParser } from './parser';
 
 export class DefaultParser implements IParser {
@@ -22,7 +22,7 @@ export class DefaultParser implements IParser {
     command.action = components[0];
 
     // === Determine Subject Start ===
-    for (var i = 1; i < components.length; ++i) {
+    for (let i = 1; i < components.length; ++i) {
       if (skipWords.indexOf(components[i]) === -1) {
         command.subject = components[i];
         subjectStartIndex = i;
@@ -31,15 +31,15 @@ export class DefaultParser implements IParser {
     }
 
     // === Determine Subject End and Object Start ===
-    for (var i = subjectStartIndex + 1; i < components.length; ++i) {
-      if (subjectEndWords.indexOf(components[i]) !== -1) {
+    for (let j = subjectStartIndex! + 1; j < components.length; ++j) {
+      if (subjectEndWords.indexOf(components[j]) !== -1) {
         command.object = '';
-        objectStartIndex = i + 1;
+        objectStartIndex = j + 1;
         break;
-      } else if (components[i] === '') {
+      } else if (components[j] === '') {
         continue;
       } else {
-        command.subject = command.subject.concat(' ' + components[i]);
+        command.subject = command.subject.concat(' ' + components[j]);
       }
     }
 

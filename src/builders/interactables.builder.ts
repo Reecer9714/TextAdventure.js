@@ -1,4 +1,4 @@
-import { IInteractableCollction, IInteractable } from '../core/shims/textadventurejs.shim';
+import { IInteractableCollction, IInteractable } from '../core/types/textadventurejs.shim';
 import { GameContext } from './game.context';
 
 export class InteractablesBuilder {

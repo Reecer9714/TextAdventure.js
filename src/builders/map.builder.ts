@@ -1,5 +1,5 @@
 import { LocationBuilder } from './location.builder';
-import { IMap } from '../core/shims/textadventurejs.shim';
+import { IMap } from '../core/types/textadventurejs.shim';
 import { GameContext } from './game.context';
 
 export class MapBuilder {

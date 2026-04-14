@@ -24,8 +24,8 @@
     "start": "node dist/web/server.js",
     "start:web": "node dist/web/server.js",
     "start:cli": "node dist/cli/server.js",
-    "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix",
+    "lint": "oxlint src",
+    "lint:fix": "oxlint src --fix",
     "format": "prettier --write src",
     "format:check": "prettier --check src",
     "typecheck": "tsc --noEmit",
@@ -33,7 +33,6 @@
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
     "preview": "vite preview",
-    "prepare": "husky install",
     "prepare": "husky"
   },
   "files": [
@@ -72,6 +71,8 @@
     "eslint-config-prettier": "^10.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
+    "oxlint": "^1.60.0",
+    "oxlint-tsgolint": "^0.21.0",
     "prettier": "^3.4.2",
     "shx": "^0.3.4",
     "supertest": "^7.0.0",
