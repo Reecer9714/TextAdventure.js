@@ -2,80 +2,84 @@ import { IInteractableCollction, IInteractable } from '../core/shims/textadventu
 import { GameContext } from './game.context';
 
 export class InteractablesBuilder {
+  private _interactableBuilders: { [interactableName: string]: InteractableBuilder } = {};
+  private _gameContext: GameContext;
+  private _savedInteractables: IInteractableCollction;
 
-    private _interactableBuilders: { [interactableName: string]: InteractableBuilder } = {};
-    private _gameContext: GameContext;
-    private _savedInteractables: IInteractableCollction;
+  constructor(gameContext: GameContext, savedInteractables?: IInteractableCollction) {
+    this._gameContext = gameContext;
+    this._savedInteractables = savedInteractables;
+  }
 
-    constructor(gameContext: GameContext, savedInteractables?: IInteractableCollction) {
-        this._gameContext = gameContext;
-        this._savedInteractables = savedInteractables;
-    }
+  public add(interactableName: string): InteractableBuilder {
+    this._interactableBuilders[interactableName] =
+      this._interactableBuilders[interactableName] || new InteractableBuilder(this._gameContext);
 
-    public add(interactableName: string): InteractableBuilder {
+    return this._interactableBuilders[interactableName];
+  }
 
-        this._interactableBuilders[interactableName] = this._interactableBuilders[interactableName] || new InteractableBuilder(this._gameContext);
+  public build(): IInteractableCollction {
+    const interactableBuilders = this._savedInteractables
+      ? this.createInteractableBuildersFromSavedInteractables()
+      : this._interactableBuilders;
+    const interactables: IInteractableCollction = {};
 
-        return this._interactableBuilders[interactableName];
-    }
+    Object.keys(interactableBuilders).forEach(interactableName => {
+      interactables[interactableName] = interactableBuilders[interactableName].build();
+    });
 
-    public build(): IInteractableCollction {
-        
-        const interactableBuilders = this._savedInteractables ? this.createInteractableBuildersFromSavedInteractables() : this._interactableBuilders;
-        const interactables: IInteractableCollction = {};
+    return interactables;
+  }
 
-        Object.keys(interactableBuilders).forEach(interactableName => {
+  private createInteractableBuildersFromSavedInteractables(): {
+    [interactableName: string]: InteractableBuilder;
+  } {
+    const interactableBuilders: { [interactableName: string]: InteractableBuilder } = {};
 
-            interactables[interactableName] = interactableBuilders[interactableName].build();
-        });
+    Object.keys(this._savedInteractables).forEach(interactableName => {
+      interactableBuilders[interactableName] = new InteractableBuilder(
+        this._gameContext,
+        this._savedInteractables[interactableName]
+      );
+    });
 
-        return interactables;
-    }
-
-    private createInteractableBuildersFromSavedInteractables(): { [interactableName: string]: InteractableBuilder } {
-
-        const interactableBuilders: { [interactableName: string]: InteractableBuilder } = {};
-
-        Object.keys(this._savedInteractables).forEach(interactableName => {
-            interactableBuilders[interactableName] = new InteractableBuilder(this._gameContext, this._savedInteractables[interactableName]);
-        });
-
-        return interactableBuilders;
-    }
+    return interactableBuilders;
+  }
 }
 
 export class InteractableBuilder {
+  private _interactionsMap: { [interactionName: string]: (gameContext: GameContext) => string } =
+    {};
+  private _gameContext: GameContext;
+  private _savedInteractable: IInteractable;
 
-    private _interactionsMap: { [interactionName: string]: (gameContext: GameContext) => string } = {};
-    private _gameContext: GameContext;
-    private _savedInteractable: IInteractable;
+  constructor(gameContext: GameContext, savedInteractable?: IInteractable) {
+    this._gameContext = gameContext;
+    this._savedInteractable = savedInteractable;
+  }
 
-    constructor(gameContext: GameContext, savedInteractable?: IInteractable) {
-        this._gameContext = gameContext;
-        this._savedInteractable = savedInteractable;
+  public on(
+    interactionName: string,
+    interactionFn: (gameContext: GameContext) => string
+  ): InteractableBuilder {
+    this._interactionsMap[interactionName] = interactionFn;
+
+    return this;
+  }
+
+  public build(): IInteractable {
+    if (this._savedInteractable) {
+      return this._savedInteractable;
     }
 
-    public on(interactionName: string, interactionFn: (gameContext: GameContext) => string): InteractableBuilder {
+    const interactable: IInteractable = {};
 
-        this._interactionsMap[interactionName] = interactionFn;
+    Object.keys(this._interactionsMap).forEach(interactionName => {
+      interactable[interactionName] = () => {
+        return this._interactionsMap[interactionName](this._gameContext);
+      };
+    });
 
-        return this;
-    }
-
-    public build(): IInteractable {
-
-        if (this._savedInteractable) {
-            return this._savedInteractable;
-        }
-
-        const interactable: IInteractable = {};
-
-        Object.keys(this._interactionsMap).forEach(interactionName => {
-            interactable[interactionName] = () => {
-                return this._interactionsMap[interactionName](this._gameContext);
-            }
-        })
-
-        return interactable;
-    }
+    return interactable;
+  }
 }

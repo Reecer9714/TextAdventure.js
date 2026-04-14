@@ -2,52 +2,49 @@ import { ICommand } from '../shims/textadventurejs.shim';
 import { IParser } from './parser';
 
 export class DefaultParser implements IParser {
+  parse(string: string): ICommand {
+    const skipWords = ['', 'a', 'an', 'at', 'in', 'on', 'the', 'to'];
+    const subjectEndWords = ['on', 'with', 'and'];
 
-	parse(string: string): ICommand {
+    // === Prep Input for Processing ===
+    const components = string.toLowerCase().split(' ');
 
-		const skipWords = ['','a','an','at','in','on','the','to'];
-		const subjectEndWords = ['on','with','and'];
+    // === Create Necessary Variables ===
+    const command: ICommand = {
+      action: '',
+      subject: '',
+    };
 
-		// === Prep Input for Processing ===
-		const components = string.toLowerCase().split(' ');
+    let subjectStartIndex: number | undefined;
+    let objectStartIndex: number | undefined;
 
-		// === Create Necessary Variables ===
-		const command: ICommand = {
-			action: '',
-			subject: ''
-		};
+    // === Determine Action ===
+    command.action = components[0];
 
-		let subjectStartIndex: number | undefined;
-		let objectStartIndex: number | undefined;
+    // === Determine Subject Start ===
+    for (var i = 1; i < components.length; ++i) {
+      if (skipWords.indexOf(components[i]) === -1) {
+        command.subject = components[i];
+        subjectStartIndex = i;
+        break;
+      }
+    }
 
-		// === Determine Action ===
-		command.action =  components[0];
+    // === Determine Subject End and Object Start ===
+    for (var i = subjectStartIndex + 1; i < components.length; ++i) {
+      if (subjectEndWords.indexOf(components[i]) !== -1) {
+        command.object = '';
+        objectStartIndex = i + 1;
+        break;
+      } else if (components[i] === '') {
+        continue;
+      } else {
+        command.subject = command.subject.concat(' ' + components[i]);
+      }
+    }
 
-		// === Determine Subject Start ===
-		for (var i=1; i < components.length; ++i){
-			if(skipWords.indexOf(components[i]) === -1){
-				command.subject = components[i];
-				subjectStartIndex = i;
-				break;
-			}
-		}
+    command.object = components.slice(objectStartIndex).join(' ');
 
-		// === Determine Subject End and Object Start ===
-		for (var i=subjectStartIndex+1; i < components.length; ++i){
-			if(subjectEndWords.indexOf(components[i]) !== -1){
-				command.object = '';
-				objectStartIndex = i+1;
-				break;
-			} else if (components[i] === '') {
-				continue;
-			} else {
-				command.subject = command.subject.concat(' '+components[i]);
-			}
-		}
-
-		command.object = components.slice(objectStartIndex).join(' ');
-
-		return command;
-	}
-
+    return command;
+  }
 }

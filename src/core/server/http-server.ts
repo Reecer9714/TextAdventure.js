@@ -16,21 +16,18 @@ export interface IServerOptions {
 }
 
 export class ConsoleHttpServer {
-
   private _options: IServerOptions = {};
   private _middleware?: Handler[];
   private _app: Express;
   private _cartridge: ICartridge;
 
   constructor(cartridge: ICartridge, options: IServerOptions) {
-
     this._middleware = [];
     this._cartridge = cartridge;
     this._options = options;
   }
 
   private configure(): void {
-
     const consoleApiPath = this._options.consoleApiPath || '/console';
 
     this._app = express();
@@ -61,30 +58,28 @@ export class ConsoleHttpServer {
     const con = createConsole(this._cartridge, {
       onDebugLog: (message: string) => {
         console.log(`    [DEBUG] ${message}`);
-      }
+      },
     });
 
-    this._app.post(consoleApiPath, function(req,res) {
-      res.json({response: con.input(req.body.input)});
+    this._app.post(consoleApiPath, function (req, res) {
+      res.json({ response: con.input(req.body.input) });
     });
   }
 
   public use(middleware: Handler): ConsoleHttpServer {
-
     this._middleware.push(middleware);
 
     return this;
   }
 
   public listen(): void {
-
     this.configure();
 
     const port = this._options.port;
     const ipAddress = this._options.ipAddress;
 
     this._app.listen(port, ipAddress, function () {
-      console.log( "Listening on " + ipAddress + ", server_port " + port);
+      console.log('Listening on ' + ipAddress + ', server_port ' + port);
     });
   }
 }
