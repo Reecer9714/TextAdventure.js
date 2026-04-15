@@ -28,7 +28,7 @@ export class ConsoleHttpServer {
   }
 
   private configure(): void {
-    const consoleApiPath = this._options.consoleApiPath || '/console';
+    const consoleApiPath = this._options.consoleApiPath ?? '/console';
 
     this._app = express();
 
@@ -49,11 +49,9 @@ export class ConsoleHttpServer {
     this._app.use(bodyParser.json());
     this._app.use(bodyParser.urlencoded({ extended: true }));
 
-    if (this._middleware) {
-      this._middleware.forEach(toUse => {
-        this._app.use(toUse);
-      });
-    }
+    this._middleware.forEach(toUse => {
+      this._app.use(toUse);
+    });
 
     const con = createConsole(this._cartridge, {
       onDebugLog: (message: string) => {

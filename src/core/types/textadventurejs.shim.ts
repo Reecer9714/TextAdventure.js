@@ -37,9 +37,7 @@ export interface ILocation {
   updateLocation?: (command: ICommand) => string;
 }
 
-export interface IItemCollection {
-  [itemName: string]: IItem;
-}
+export type IItemCollection = Record<string, IItem | undefined>;
 export interface IInteractableCollction {
   [interactableName: string]: IInteractable;
 }

@@ -1,9 +1,14 @@
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import { DefaultConsoleActons } from '../../core/types/textadventurejs.shim';
 import { CartridgeBuilder } from '../../builders/cartridge.builder';
 import fs from 'fs';
 import path from 'path';
 
-const introText = fs.readFileSync(path.resolve(__dirname, 'introtext.txt'), 'utf8');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const introText = fs.readFileSync(join(__dirname, 'introtext.txt'), 'utf8');
 
 export default (cartridgeBuilder: CartridgeBuilder) => {
   cartridgeBuilder

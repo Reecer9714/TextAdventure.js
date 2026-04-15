@@ -5,35 +5,42 @@
 ## Quick Start
 
 ```bash
-# Install dependencies
-npm ci
+# Install dependencies (requires pnpm)
+pnpm ci
 
 # Build the project
-npm run build
+pnpm run build
 
 # Start the server
-npm start
+pnpm start
 ```
 
 ## Development
 
 ```bash
-# Install dependencies
-npm ci
+# Install dependencies (requires pnpm)
+pnpm ci
 
 # Run in development mode with hot reloading
-npm run dev
+# Web dev server (browser interface)
+pnpm run dev
+
+# CLI dev server (terminal interface)
+pnpm run dev:cli
+
+# Both dev servers together
+pnpm run dev:all
 
 # Run tests
-npm test
+pnpm test
 
 # Run tests in watch mode
-npm run test:watch
+pnpm run test:watch
 
 # Check code quality
-npm run lint
-npm run format:check
-npm run typecheck
+pnpm run lint
+pnpm run format:check
+pnpm run typecheck
 ```
 
 ## Usage
@@ -58,13 +65,14 @@ dev look at cabinet; open drawer; take key; use key on door; open door
 ## Features
 
 - 🎮 **Game Engine**: Full interactive fiction engine with rooms, items, and interactions
-- 🖥️ **CLI Interface**: Terminal-based gameplay
-- 🌐 **Web Interface**: Browser-based play with modern UI
+- 🖥️ **CLI Interface**: Terminal-based gameplay with hot reload
+- 🌐 **Web Interface**: Browser-based play with modern UI and hot reload
 - 📦 **Cartridge System**: Create and share your own adventures
 - 🔒 **Secure**: Modern security practices with helmet, CORS, and rate limiting
-- ⚡ **Fast**: Built with Vite for lightning-fast development and builds
+- ⚡ **Fast**: Built with Vite (browser) and esbuild (server) for lightning-fast builds
 - 🧪 **Tested**: Comprehensive test suite with Vitest
-- 📝 **Linted**: ESLint + Prettier for code quality
+- 📝 **Linted**: Oxlint + Prettier for code quality
+- 🔧 **pnpm**: Faster installs with better dependency management
 
 ## Architecture
 
@@ -91,28 +99,57 @@ text-adventure/
 
 - **Runtime**: Node.js 18+
 - **Language**: TypeScript 5.x
-- **Build**: Vite
+- **Build**: Vite (browser), esbuild (server)
+- **Dev Tools**: tsx (TypeScript execution), concurrently (multi-server)
 - **Server**: Express 4.x
 - **Testing**: Vitest
-- **Code Quality**: ESLint + Prettier
+- **Code Quality**: Oxlint + Prettier
 - **Security**: Helmet, CORS, Express Rate Limit
+- **Package Manager**: pnpm
 
 ## Scripts
 
+### Build Scripts
+
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start development server with Vite |
-| `npm run build` | Build for production |
-| `npm start` | Start production server |
-| `npm test` | Run tests |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run test:coverage` | Run tests with coverage |
-| `npm run lint` | Lint TypeScript files |
-| `npm run lint:fix` | Auto-fix linting issues |
-| `npm run format` | Format code with Prettier |
-| `npm run format:check` | Check code formatting |
-| `npm run typecheck` | Type check without emitting files |
-| `npm run clean` | Remove dist directory |
+| `pnpm run build` | Full production build (server + web + cartridges) |
+| `pnpm run build:server` | Build server code with esbuild |
+| `pnpm run build:web` | Build browser assets with Vite |
+| `pnpm start` | Start production server |
+
+### Development Scripts
+
+| Command | Description |
+|---------|-------------|
+| `pnpm run dev` | Web dev server with hot reload |
+| `pnpm run dev:cli` | CLI dev server with hot reload |
+| `pnpm run dev:all` | Start both dev servers together |
+
+### Testing Scripts
+
+| Command | Description |
+|---------|-------------|
+| `pnpm test` | Run all tests |
+| `pnpm run test:watch` | Run tests in watch mode |
+| `pnpm run test:coverage` | Run tests with coverage report |
+
+### Code Quality Scripts
+
+| Command | Description |
+|---------|-------------|
+| `pnpm run lint` | Run Oxlint |
+| `pnpm run lint:fix` | Auto-fix linting issues |
+| `pnpm run format` | Format code with Prettier |
+| `pnpm run format:check` | Check code formatting |
+| `pnpm run typecheck` | Type check without emitting files |
+| `pnpm run typecheck:watch` | Type check in watch mode |
+
+### Utility Scripts
+
+| Command | Description |
+|---------|-------------|
+| `pnpm run clean` | Remove dist directory |
 
 ## Documentation
 
@@ -131,6 +168,16 @@ Contributions are welcome! Please read our contributing guidelines before submit
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## Environment Setup
+
+Create a `.env` file from `.env.example`:
+
+```bash
+cp .env.example .env
+```
+
+See `.env.example` for available environment variables.
 
 ---
 

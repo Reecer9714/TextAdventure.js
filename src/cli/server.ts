@@ -1,11 +1,15 @@
-import * as io from 'console-read-write';
-import * as chalk from 'chalk';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import io from 'console-read-write';
+import chalk from 'chalk';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 import createConsole, { IConsoleInputResponse } from '../core/console/console';
 
 import necroCartridgeFactory from '../cartridges/necro';
 import { FileSystemCartridgeRepository } from '../core/repositories/file-system.cartridge.repository';
-import path from 'path';
 import { CartridgeBuilder } from '../builders/cartridge.builder';
 
 const debugEnabled = process.env.NECRO_DEBUG
@@ -14,7 +18,7 @@ const debugEnabled = process.env.NECRO_DEBUG
 const devmodeEnabled = process.env.NECRO_DEVMODE
   ? process.env.NECRO_DEVMODE.toLowerCase() === 'true'
   : false;
-const saveFilePath = process.env.NECRO_SAVEFILE || path.join(__dirname, 'savefile.json');
+const saveFilePath = process.env.NECRO_SAVEFILE || join(__dirname, 'savefile.json');
 
 async function main() {
   const repository = new FileSystemCartridgeRepository(saveFilePath);

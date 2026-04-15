@@ -1,0 +1,10 @@
+.env
+.env.example
+*.md
+doc/
+.github/
+.husky/
+.pi/
+pnpm-lock.yaml
+test-results/
+coverage/

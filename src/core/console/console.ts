@@ -64,7 +64,7 @@ export default function createConsole(
       returnString = interactWithSubjectInCurrentLocation(game, command.action, command.subject);
     }
 
-    returnString = returnString || "I don't know how to do that";
+    returnString = returnString ?? "I don't know how to do that";
 
     const currentLocation = getCurrentLocation(game);
 
@@ -90,7 +90,7 @@ export default function createConsole(
   // ----------------------------\
   // === Console Actions =================================================================================================
   // ----------------------------/
-  var actions: any = {
+  var actions = {
     drop: function (game: IGameData, command: ICommand): IGameActionResult {
       if (!command.subject) {
         return { message: 'What do you want to drop?', success: false };
@@ -139,7 +139,7 @@ export default function createConsole(
       }
 
       const matchingExit = Object.entries(exits).find(
-        ([exitName, exit]) =>
+        ([exitName, _]) =>
           exits[exitName].displayName &&
           exits[exitName].displayName.toLowerCase() === command.subject.toLowerCase()
       );
@@ -173,10 +173,11 @@ export default function createConsole(
       return { message: getLocationDescription(game), success: true };
     },
 
-    inventory: function (game: any, command: any) {
+    inventory: function (game: IGameData, _command: ICommand): IGameActionResult {
       var inventoryList = 'Your inventory contains:';
       for (var item in game.player.inventory) {
         var itemObject = game.player.inventory[item];
+        if (!itemObject) continue;
         var itemName = itemObject.displayName;
         if (itemObject.quantity > 1) {
           itemName = itemName.concat(' x' + itemObject.quantity);
@@ -306,18 +307,18 @@ export default function createConsole(
     }
     const temp = obj.constructor();
     for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key) !== undefined) {
         (temp as Record<string, unknown>)[key] = clone(obj[key]);
       }
     }
     return temp;
   }
 
-  function consoleInterface(game: any, command: any) {
+  function consoleInterface(game: IGameData, command: ICommand): IGameActionResult {
     return actions[command.action](game, command);
   }
 
-  function debug(debugText: any) {
+  function debug(debugText: string): void {
     if (typeof options.onDebugLog === 'function') {
       options.onDebugLog(debugText);
     }
@@ -331,8 +332,8 @@ export default function createConsole(
     const visibleExits: string[] = [];
     for (const exit in exitsObject) {
       const exitObject = exitsObject[exit];
-      if (!exitObject.hidden) {
-        visibleExits.push(exitObject.displayName as string);
+      if (exitObject.hidden !== undefined && !exitObject.hidden) {
+        visibleExits.push(exitObject.displayName);
       }
     }
     let exitReturnString: string;
@@ -362,7 +363,7 @@ export default function createConsole(
     return gameData.map[gameData.player.currentLocation];
   }
 
-  function getLocationDescription(game: any, forcedLongDescription?: any) {
+  function getLocationDescription(game: IGameData, forcedLongDescription?: boolean) {
     var currentLocation = getCurrentLocation(game);
     var description;
     if (currentLocation.firstVisit || forcedLongDescription) {
@@ -379,11 +380,12 @@ export default function createConsole(
     return description;
   }
 
-  function getItem(itemLocation: any, itemName: any): IItem {
-    return itemLocation[getItemName(itemLocation, itemName)];
+  function getItem(itemLocation: IItemCollection, itemName: string): IItem | undefined {
+    const gotItemName = getItemName(itemLocation, itemName);
+    return gotItemName ? itemLocation[gotItemName] : undefined;
   }
 
-  function getItemName(itemLocation: any, itemName: any) {
+  function getItemName(itemLocation: IItemCollection, itemName: string): string | undefined {
     if (itemLocation[itemName] !== undefined) {
       return itemName;
     } else {
@@ -551,7 +553,7 @@ export default function createConsole(
     } else {
       (endLocation)[itemNameToMove].quantity++;
     }
-    if (Object.prototype.hasOwnProperty.call(itemAtOrigin, 'quantity')) {
+    if (itemAtOrigin.quantity) {
       (itemAtOrigin as { quantity: number }).quantity--;
       if ((itemAtOrigin as { quantity: number }).quantity === 0) {
         delete startLocation[itemNameToMove];
